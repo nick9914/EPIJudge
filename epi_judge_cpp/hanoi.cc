@@ -10,10 +10,35 @@ using std::array;
 using std::stack;
 using std::vector;
 const int kNumPegs = 3;
+
+vector<vector<int>> initializePegs(int num_rings) {
+  vector<vector<int>> pegs(3);
+  for(int i = num_rings; i >= 1; i--) {
+    pegs[0].push_back(i);
+  }
+  return pegs;
+}
+// TODO: AHHH what where we thinking pass by value duh!
+void computeTowerHanoiAux(vector<vector<int>> & pegs, int num_rings, int from_peg, int to_peg, int using_peg, vector<vector<int>> & result) {
+  if(num_rings > 0) {
+    computeTowerHanoiAux(pegs, num_rings - 1, from_peg, using_peg, to_peg, result); // from -> intermediate
+    int ring = pegs[from_peg].back();
+    pegs[from_peg].pop_back();
+    pegs[to_peg].push_back(ring);
+    result.push_back({from_peg, to_peg});
+    //std::cout << from_peg << "," << to_peg << std::endl;
+    computeTowerHanoiAux(pegs, num_rings - 1, using_peg, to_peg, from_peg, result); // intermediate -> to
+  }
+}
+
 vector<vector<int>> ComputeTowerHanoi(int num_rings) {
   // TODO - you fill in here.
-  return {};
+  vector<vector<int>> pegs = initializePegs(num_rings);
+  vector<vector<int>> result;
+  computeTowerHanoiAux(pegs, num_rings, 0, 1, 2, result);
+  return result;
 }
+
 void ComputeTowerHanoiWrapper(TimedExecutor& executor, int num_rings) {
   array<stack<int>, kNumPegs> pegs;
   for (int i = num_rings; i >= 1; --i) {
