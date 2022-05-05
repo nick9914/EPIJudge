@@ -6,56 +6,36 @@
 using std::string;
 using std::vector;
 
-int LevenshteinDistanceAux(const string& A, const string& B, 
-std::unordered_map<std::string, std::unordered_map<std::string, int> >& cache) {
-  if(cache.find(A) != cache.end() && cache[A].find(B) != cache[A].end()) {
-    //std::cout << "reuse cache: " << cache[A][B] << std::endl;
-    return cache[A][B];
+int LevenshteinDistanceAux(const string& A, const string& B, int AIdx, int BIdx,
+vector<vector<int>>& cache) {
+
+  if(AIdx < 0 || BIdx < 0) {
+    return AIdx < 0 ? BIdx + 1 : AIdx + 1;    
   }
 
-  if(A.empty() || B.empty() || A == B) {
-    int levDistance = 0;
-    if(A == B) {
-      levDistance = 0;
-    } else if(A.empty()) {
-      levDistance = B.size();
-    } else {
-      levDistance = A.size();
-    }    
-    cache[A][B] = levDistance;
-    //return levDistance;
-  } else  {
+  if(cache[AIdx][BIdx] == -1) {
+    if(A[AIdx] == B[BIdx]) {
+      cache[AIdx][BIdx] = LevenshteinDistanceAux(A,B, AIdx - 1, BIdx -1 , cache);
+    } else {      
+      int deletionAdjustment = LevenshteinDistanceAux(A, B, AIdx -1, BIdx, cache);
 
-    if(A[A.size() - 1] == B[B.size() - 1]) {
-      cache[A][B] = LevenshteinDistanceAux(A.substr(0, A.size() >= 1 ? A.size() - 1 : 0),
-     B.substr(0, B.size() >= 1 ? B.size() - 1 : 0), cache);
-
-    } else {
-      //std::cout << "deletionAdjustment: " << A << ", " << B << std::endl;
-      int deletionAdjustment = LevenshteinDistanceAux(A.substr(0, A.size() >= 1 ? A.size() - 1 : 0), B, cache);
-
-      //std::cout << "substitutionAdjustment: " << A << ", " << B << std::endl;
-      int substitutionAdjustment = LevenshteinDistanceAux(A.substr(0, A.size() >= 1 ? A.size() - 1 : 0),
-        B.substr(0, B.size() >= 1 ? B.size() - 1 : 0), cache);
+      int substitutionAdjustment = LevenshteinDistanceAux(A, B, AIdx - 1, BIdx - 1, cache);
     
-      //std::cout << "insertionAdjustment: " << A << ", " << B << std::endl;
-      int insertionAdjustment = LevenshteinDistanceAux(A, B.substr(0, B.size() >= 1 ? B.size() - 1 : 0), cache);
-      cache[A][B] = 1 + std::min(std::min(deletionAdjustment, substitutionAdjustment), insertionAdjustment);
+      int insertionAdjustment = LevenshteinDistanceAux(A, B, AIdx, BIdx -1, cache);
+    
+      cache[AIdx][BIdx] = 1 + std::min({deletionAdjustment, substitutionAdjustment, 
+        insertionAdjustment});
     }    
-  } 
-  //std::cout << "result: "  << A << ", " << B << " : " <<cache[A][B] << std::endl;
-  return cache[A][B];
+  }
+  return cache[AIdx][BIdx];
 }
 
 int LevenshteinDistance(const string& A, const string& B) {
   //cache definition
-  //TODO: look at test case and start with simpler example.
-  // also googling segmentation fa
-  //std::cout << "before recursion" << std::endl;
-  std::unordered_map<std::string, std::unordered_map<std::string, int> > cache;
-  LevenshteinDistanceAux(A, B, cache);
+  vector<vector<int>> cache(A.size(), vector<int>(B.size(), -1));
+  LevenshteinDistanceAux(A, B, A.size() -1 , B.size() - 1, cache);
   //std::cout << "A and B: " << A << ", " << B << std::endl;
-  return cache[A][B];
+  return cache[A.size() -1 ][B.size() - 1];
 }
 
 int main(int argc, char* argv[]) {
