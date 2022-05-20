@@ -2036,7 +2036,7 @@ problem_mapping = {
         },
         "15.06 Generate all subsets of size k": {
             "C++: combinations.cc": {
-                "passed": 0,
+                "passed": 120,
                 "total": 120
             },
             "Java: Combinations.java": {
