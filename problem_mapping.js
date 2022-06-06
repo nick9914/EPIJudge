@@ -2190,7 +2190,7 @@ problem_mapping = {
         },
         "16.04 Compute the binomial coefficients": {
             "C++: binomial_coefficients.cc": {
-                "passed": 0,
+                "passed": 5906,
                 "total": 5906
             },
             "Java: BinomialCoefficients.java": {
