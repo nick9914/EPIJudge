@@ -2204,7 +2204,7 @@ problem_mapping = {
         },
         "16.05 Search for a sequence in a 2D array": {
             "C++: is_string_in_matrix.cc": {
-                "passed": 0,
+                "passed": 186,
                 "total": 186
             },
             "Java: IsStringInMatrix.java": {
